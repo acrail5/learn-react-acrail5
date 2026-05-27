@@ -9,3 +9,13 @@ function Header() {
     </header>
   )
 }
+
+function RecipeCard(props) {
+  return (
+    <section className="recipe-card">
+      <h2>{props.name}</h2>
+      <p><strong>Type:</strong> {props.type}</p>
+      <p>{props.description}</p>
+    </section>
+  )
+}
