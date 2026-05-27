@@ -41,3 +41,34 @@ main {
 .recipe-form h3 {
   color: #8b1e1e;
 }
+
+.recipe-form label {
+  display: block;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.recipe-form input,
+.recipe-form textarea {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.recipe-form button {
+  background-color: #8b1e1e;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.recipe-form button:hover {
+  background-color: #5f1414;
+}
