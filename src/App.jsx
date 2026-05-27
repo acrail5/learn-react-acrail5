@@ -38,3 +38,77 @@ function App() {
       description: 'A quick drink made with fruit, milk, and ice.'
     }
   ])
+
+  const [recipeName, setRecipeName] = useState('')
+  const [recipeType, setRecipeType] = useState('')
+  const [recipeDescription, setRecipeDescription] = useState('')
+
+  function handleSubmit(event) {
+    event.preventDefault()
+
+    const newRecipe = {
+      name: recipeName,
+      type: recipeType,
+      description: recipeDescription
+    }
+
+    setRecipes([...recipes, newRecipe])
+
+    setRecipeName('')
+    setRecipeType('')
+    setRecipeDescription('')
+  }
+
+  return (
+    <>
+      <Header />
+
+      <main>
+        <h2>My Favorite Recipes</h2>
+
+        <form className="recipe-form" onSubmit={handleSubmit}>
+          <h3>Add a New Recipe</h3>
+
+          <label>
+            Recipe Name:
+            <input
+              type="text"
+              value={recipeName}
+              onChange={(event) => setRecipeName(event.target.value)}
+            />
+          </label>
+
+          <label>
+            Recipe Type:
+            <input
+              type="text"
+              value={recipeType}
+              onChange={(event) => setRecipeType(event.target.value)}
+            />
+          </label>
+
+          <label>
+            Description:
+            <textarea
+              value={recipeDescription}
+              onChange={(event) => setRecipeDescription(event.target.value)}
+            />
+          </label>
+
+          <button type="submit">Add Recipe</button>
+        </form>
+
+        {recipes.map((recipe, index) => (
+          <RecipeCard
+            key={index}
+            name={recipe.name}
+            type={recipe.type}
+            description={recipe.description}
+          />
+        ))}
+      </main>
+    </>
+  )
+}
+
+export default App

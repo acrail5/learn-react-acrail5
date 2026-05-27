@@ -29,3 +29,15 @@ main {
 .recipe-card h2 {
   color: #8b1e1e;
 }
+
+.recipe-form {
+  background-color: white;
+  border: 2px solid #f2d0a4;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.recipe-form h3 {
+  color: #8b1e1e;
+}
