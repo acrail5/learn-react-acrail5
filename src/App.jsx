@@ -19,3 +19,22 @@ function RecipeCard(props) {
     </section>
   )
 }
+
+function App() {
+  const [recipes, setRecipes] = useState([
+    {
+      name: 'Spam Musubi',
+      type: 'Snack',
+      description: 'A simple local favorite made with rice, spam, and seaweed.'
+    },
+    {
+      name: 'Chicken Alfredo',
+      type: 'Dinner',
+      description: 'A creamy pasta dish with chicken, noodles, and Alfredo sauce.'
+    },
+    {
+      name: 'Fruit Smoothie',
+      type: 'Drink',
+      description: 'A quick drink made with fruit, milk, and ice.'
+    }
+  ])
