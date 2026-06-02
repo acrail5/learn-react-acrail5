@@ -1,111 +1,74 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 
 function Header() {
   return (
     <header>
-      <h1>ForKingRecipe React Practice</h1>
-      <p>Learning React state, events, and forms.</p>
+      <h1>ForKingRecipe Browser</h1>
+      <p>Week 3 React: fetching and displaying recipe data.</p>
     </header>
   )
 }
 
-function RecipeCard(props) {
+function RecipeCard({ name, type, description }) {
   return (
     <section className="recipe-card">
-      <h2>{props.name}</h2>
-      <p><strong>Type:</strong> {props.type}</p>
-      <p>{props.description}</p>
+      <h2>{name}</h2>
+      <p><strong>Type:</strong> {type}</p>
+      <p>{description}</p>
     </section>
   )
 }
 
 function App() {
-  const [recipes, setRecipes] = useState([
-    {
-      name: 'Spam Musubi',
-      type: 'Snack',
-      description: 'A simple local favorite made with rice, spam, and seaweed.'
-    },
-    {
-      name: 'Chicken Alfredo',
-      type: 'Dinner',
-      description: 'A creamy pasta dish with chicken, noodles, and Alfredo sauce.'
-    },
-    {
-      name: 'Fruit Smoothie',
-      type: 'Drink',
-      description: 'A quick drink made with fruit, milk, and ice.'
-    }
-  ])
+  const [recipes, setRecipes] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState('')
 
-  const [recipeName, setRecipeName] = useState('')
-  const [recipeType, setRecipeType] = useState('')
-  const [recipeDescription, setRecipeDescription] = useState('')
+  useEffect(() => {
+    async function loadRecipes() {
+      try {
+        const response = await fetch('/recipes.json')
 
-  function handleSubmit(event) {
-    event.preventDefault()
+        if (!response.ok) {
+          throw new Error('Could not load recipes.')
+        }
 
-    const newRecipe = {
-      name: recipeName,
-      type: recipeType,
-      description: recipeDescription
+        const data = await response.json()
+        setRecipes(data)
+      } catch (error) {
+        setErrorMessage(error.message)
+      } finally {
+        setLoading(false)
+      }
     }
 
-    setRecipes([...recipes, newRecipe])
-
-    setRecipeName('')
-    setRecipeType('')
-    setRecipeDescription('')
-  }
+    loadRecipes()
+  }, [])
 
   return (
     <>
       <Header />
 
       <main>
-        <h2>My Favorite Recipes</h2>
+        <h2>Recipe List from JSON Data</h2>
 
-        <form className="recipe-form" onSubmit={handleSubmit}>
-          <h3>Add a New Recipe</h3>
+        {loading && <p>Loading recipes...</p>}
 
-          <label>
-            Recipe Name:
-            <input
-              type="text"
-              value={recipeName}
-              onChange={(event) => setRecipeName(event.target.value)}
-            />
-          </label>
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
 
-          <label>
-            Recipe Type:
-            <input
-              type="text"
-              value={recipeType}
-              onChange={(event) => setRecipeType(event.target.value)}
-            />
-          </label>
-
-          <label>
-            Description:
-            <textarea
-              value={recipeDescription}
-              onChange={(event) => setRecipeDescription(event.target.value)}
-            />
-          </label>
-
-          <button type="submit">Add Recipe</button>
-        </form>
-
-        {recipes.map((recipe, index) => (
-          <RecipeCard
-            key={index}
-            name={recipe.name}
-            type={recipe.type}
-            description={recipe.description}
-          />
-        ))}
+        {!loading && !errorMessage && (
+          <div className="recipe-grid">
+            {recipes.map((recipe) => (
+              <RecipeCard
+                key={recipe.id}
+                name={recipe.name}
+                type={recipe.type}
+                description={recipe.description}
+              />
+            ))}
+          </div>
+        )}
       </main>
     </>
   )
