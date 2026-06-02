@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "Spam Musubi",
+    "type": "Snack",
+    "description": "A local favorite made with rice, spam, and seaweed."
+  },
+  {
+    "id": 2,
+    "name": "Chicken Alfredo",
+    "type": "Dinner",
+    "description": "A creamy pasta recipe with chicken, noodles, and Alfredo sauce."
+  },
+  {
+    "id": 3,
+    "name": "Fruit Smoothie",
+    "type": "Drink",
+    "description": "A simple drink made with fruit, milk, and ice."
+  },
+  {
+    "id": 4,
+    "name": "Pancakes",
+    "type": "Breakfast",
+    "description": "A breakfast food made with batter and cooked on a pan."
+  }
+]
