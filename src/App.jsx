@@ -1,76 +1,129 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import './App.css'
 
-function Header() {
-  return (
-    <header>
-      <h1>ForKingRecipe Browser</h1>
-      <p>Week 3 React: fetching and displaying recipe data.</p>
-    </header>
-  )
-}
-
-function RecipeCard({ name, type, description }) {
-  return (
-    <section className="recipe-card">
-      <h2>{name}</h2>
-      <p><strong>Type:</strong> {type}</p>
-      <p>{description}</p>
-    </section>
-  )
-}
-
 function App() {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [token, setToken] = useState('')
+  const [message, setMessage] = useState('')
   const [recipes, setRecipes] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [errorMessage, setErrorMessage] = useState('')
 
-  useEffect(() => {
-    async function loadRecipes() {
-      try {
-        const response = await fetch('/recipes.json')
+  async function handleLogin(event) {
+    event.preventDefault()
 
-        if (!response.ok) {
-          throw new Error('Could not load recipes.')
-        }
+    try {
+      const response = await fetch('/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password
+        })
+      })
 
-        const data = await response.json()
-        setRecipes(data)
-      } catch (error) {
-        setErrorMessage(error.message)
-      } finally {
-        setLoading(false)
+      const data = await response.json()
+
+      if (!response.ok) {
+        setMessage(data.message || 'Login failed')
+        return
       }
-    }
 
-    loadRecipes()
-  }, [])
+      setToken(data.token)
+      setMessage('Login successful')
+      setUsername('')
+      setPassword('')
+    } catch (error) {
+      setMessage('Could not connect to the API')
+    }
+  }
+
+  async function loadRecipes() {
+    try {
+      const response = await fetch('/api/recipes', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setMessage(data.message || 'Could not load recipes')
+        return
+      }
+
+      setRecipes(data)
+      setMessage('Recipes loaded successfully')
+    } catch (error) {
+      setMessage('Could not connect to the API')
+    }
+  }
+
+  function handleLogout() {
+    setToken('')
+    setRecipes([])
+    setMessage('Logged out')
+  }
 
   return (
-    <>
-      <Header />
+    <main>
+      <h1>ForKingRecipe Login Practice</h1>
+      <p>Week 4 : login, JWT token, and authenticated requests.</p>
 
-      <main>
-        <h2>Recipe List from JSON Data</h2>
+      {!token && (
+        <form className="login-form" onSubmit={handleLogin}>
+          <h2>Login</h2>
 
-        {loading && <p>Loading recipes...</p>}
+          <label>
+            Username:
+            <input
+              type="text"
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+            />
+          </label>
 
-        {errorMessage && <p className="error-message">{errorMessage}</p>}
+          <label>
+            Password:
+            <input
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+          </label>
 
-        {!loading && !errorMessage && (
-          <div className="recipe-grid">
-            {recipes.map((recipe) => (
-              <RecipeCard
-                key={recipe.id}
-                name={recipe.name}
-                type={recipe.type}
-                description={recipe.description}
-              />
-            ))}
-          </div>
-        )}
-      </main>
-    </>
+          <button type="submit">Log In</button>
+        </form>
+      )}
+
+      {token && (
+        <section className="user-panel">
+          <h2>You are logged in</h2>
+          <p>The app saved the JWT token in React state.</p>
+
+          <button onClick={loadRecipes}>Load Protected Recipes</button>
+          <button onClick={handleLogout}>Log Out</button>
+        </section>
+      )}
+
+      {message && <p className="message">{message}</p>}
+
+      {recipes.length > 0 && (
+        <section>
+          <h2>Recipes From Protected API</h2>
+
+          {recipes.map((recipe) => (
+            <article className="recipe-card" key={recipe._id}>
+              <h3>{recipe.recipe_name}</h3>
+              <p><strong>Category:</strong> {recipe.category}</p>
+              <p>{recipe.description}</p>
+            </article>
+          ))}
+        </section>
+      )}
+    </main>
   )
 }
 

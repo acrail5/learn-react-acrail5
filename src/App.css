@@ -5,50 +5,61 @@ body {
   color: #333333;
 }
 
-header {
-  background-color: #8b1e1e;
-  color: white;
-  text-align: center;
-  padding: 30px;
-}
-
 main {
-  max-width: 1000px;
+  max-width: 850px;
   margin: 30px auto;
-  padding: 20px;
+  padding: 25px;
 }
 
-main h2 {
+h1,
+h2,
+h3 {
   color: #8b1e1e;
 }
 
-.recipe-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
+.login-form,
+.user-panel,
 .recipe-card {
   background-color: white;
   border: 2px solid #f2d0a4;
   border-radius: 12px;
   padding: 20px;
+  margin-bottom: 20px;
 }
 
-.recipe-card h2 {
-  color: #8b1e1e;
+label {
+  display: block;
+  margin-bottom: 15px;
+  font-weight: bold;
 }
 
-.error-message {
-  background-color: #ffe0e0;
-  border: 2px solid #cc0000;
-  color: #800000;
+input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+}
+
+button {
+  background-color: #8b1e1e;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  margin-right: 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #5f1414;
+}
+
+.message {
+  background-color: #f2d0a4;
   padding: 15px;
   border-radius: 8px;
-}
-
-@media screen and (max-width: 700px) {
-  .recipe-grid {
-    grid-template-columns: 1fr;
-  }
+  font-weight: bold;
 }
