@@ -9,16 +9,19 @@ body {
   background-color: #8b1e1e;
   color: white;
   padding: 20px;
+  text-align: center;
 }
 
 .site-header h1 {
   margin: 0 0 15px 0;
+  font-size: 48px;
 }
 
 nav {
   display: flex;
   gap: 15px;
   align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
 }
 
@@ -27,11 +30,12 @@ nav button {
   color: white;
   background: none;
   border: 1px solid white;
-  padding: 8px 12px;
+  padding: 10px 16px;
   border-radius: 6px;
   text-decoration: none;
   cursor: pointer;
   font-weight: bold;
+  font-size: 16px;
 }
 
 nav a:hover,
@@ -103,6 +107,7 @@ button:hover,
   padding: 15px;
   border-radius: 8px;
   font-weight: bold;
+  text-align: center;
 }
 
 .recipe-grid {
@@ -113,4 +118,11 @@ button:hover,
 
 .button-row {
   margin-top: 20px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 20px;
+  color: #8b1e1e;
+  font-weight: bold;
 }

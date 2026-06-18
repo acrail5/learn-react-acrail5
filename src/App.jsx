@@ -1,5 +1,13 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Link, Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom'
+import {
+  BrowserRouter,
+  Link,
+  Navigate,
+  Route,
+  Routes,
+  useNavigate,
+  useParams
+} from 'react-router-dom'
 import './App.css'
 
 function App() {
@@ -22,8 +30,10 @@ function App() {
 
         <nav>
           <Link to="/">Home</Link>
+
           {!token && <Link to="/signup">Sign Up</Link>}
           {!token && <Link to="/login">Login</Link>}
+
           {token && <Link to="/recipes">Recipes</Link>}
           {token && <button onClick={logoutUser}>Logout</button>}
         </nav>
@@ -33,10 +43,12 @@ function App() {
         <Route path="/" element={<Home token={token} />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login loginUser={loginUser} />} />
+
         <Route
           path="/recipes"
           element={token ? <RecipesList token={token} /> : <Navigate to="/login" />}
         />
+
         <Route
           path="/recipes/:id"
           element={token ? <RecipeDetails token={token} /> : <Navigate to="/login" />}
@@ -52,7 +64,8 @@ function Home({ token }) {
       <section className="hero">
         <h2>Welcome to ForKingRecipe</h2>
         <p>
-          Users please sign up, log in, and view recipes from a secured REST API.
+          This frontend connects to my secured REST API. Users can sign up, log in,
+          view all recipes, and view one recipe.
         </p>
 
         {!token ? (
@@ -70,12 +83,14 @@ function Home({ token }) {
 
 function SignUp() {
   const navigate = useNavigate()
+
   const [formData, setFormData] = useState({
     name: '',
     username: '',
     email: '',
     password: ''
   })
+
   const [message, setMessage] = useState('')
 
   function handleChange(event) {
@@ -87,6 +102,7 @@ function SignUp() {
 
   async function handleSubmit(event) {
     event.preventDefault()
+    setMessage('')
 
     try {
       const response = await fetch('/api/users/signup', {
@@ -110,6 +126,7 @@ function SignUp() {
         navigate('/login')
       }, 1000)
     } catch (error) {
+      console.log(error)
       setMessage('Could not connect to the API')
     }
   }
@@ -175,12 +192,14 @@ function SignUp() {
 
 function Login({ loginUser }) {
   const navigate = useNavigate()
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState('')
 
   async function handleSubmit(event) {
     event.preventDefault()
+    setMessage('')
 
     try {
       const response = await fetch('/api/users/login', {
@@ -204,6 +223,7 @@ function Login({ loginUser }) {
       loginUser(data.token)
       navigate('/recipes')
     } catch (error) {
+      console.log(error)
       setMessage('Could not connect to the API')
     }
   }
@@ -246,26 +266,34 @@ function Login({ loginUser }) {
 function RecipesList({ token }) {
   const [recipes, setRecipes] = useState([])
   const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadRecipes() {
+      setLoading(true)
+      setMessage('')
+
       try {
-        const response = await fetch(`/api/recipes/${id}`, {
-  headers: {
-    Authorization: `Bearer ${token}`
-  }
-})
+        const response = await fetch('/api/recipes', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
 
         const data = await response.json()
 
         if (!response.ok) {
           setMessage(data.message || 'Could not load recipes')
+          setLoading(false)
           return
         }
 
         setRecipes(data)
+        setLoading(false)
       } catch (error) {
+        console.log(error)
         setMessage('Could not connect to the API')
+        setLoading(false)
       }
     }
 
@@ -276,10 +304,11 @@ function RecipesList({ token }) {
     <main className="page">
       <h2>All Recipes</h2>
 
+      {loading && <p className="message">Loading recipes...</p>}
       {message && <p className="message">{message}</p>}
 
-      {recipes.length === 0 && !message && (
-        <p>No recipes found. Create recipes in your API first.</p>
+      {!loading && !message && recipes.length === 0 && (
+        <p className="message">No recipes found. Create recipes in your API first.</p>
       )}
 
       <section className="recipe-grid">
@@ -288,6 +317,7 @@ function RecipesList({ token }) {
             <h3>{recipe.recipe_name}</h3>
             <p><strong>Category:</strong> {recipe.category}</p>
             <p>{recipe.description}</p>
+
             <Link className="button-link" to={`/recipes/${recipe._id}`}>
               View Details
             </Link>
@@ -300,11 +330,16 @@ function RecipesList({ token }) {
 
 function RecipeDetails({ token }) {
   const { id } = useParams()
+
   const [recipe, setRecipe] = useState(null)
   const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadRecipe() {
+      setLoading(true)
+      setMessage('')
+
       try {
         const response = await fetch(`/api/recipes/${id}`, {
           headers: {
@@ -312,16 +347,35 @@ function RecipeDetails({ token }) {
           }
         })
 
-        const data = await response.json()
+        console.log('Recipe details URL:', `/api/recipes/${id}`)
+        console.log('Response status:', response.status)
+        console.log('Response content type:', response.headers.get('content-type'))
+
+        const text = await response.text()
+        console.log('Raw response:', text)
+
+        let data
+
+        try {
+          data = JSON.parse(text)
+        } catch (error) {
+          setMessage('The API returned HTML instead of JSON. Check the backend GET one recipe route.')
+          setLoading(false)
+          return
+        }
 
         if (!response.ok) {
           setMessage(data.message || 'Could not load recipe')
+          setLoading(false)
           return
         }
 
         setRecipe(data)
+        setLoading(false)
       } catch (error) {
-        setMessage('Could not connect to the API')
+        console.log(error)
+        setMessage(error.message)
+        setLoading(false)
       }
     }
 
@@ -330,13 +384,15 @@ function RecipeDetails({ token }) {
 
   return (
     <main className="page">
-      <Link to="/recipes">← Back to all recipes</Link>
+      <Link className="back-link" to="/recipes">← Back to all recipes</Link>
 
+      {loading && <p className="message">Loading recipe...</p>}
       {message && <p className="message">{message}</p>}
 
       {recipe && (
         <section className="card">
           <h2>{recipe.recipe_name}</h2>
+
           <p><strong>Category:</strong> {recipe.category}</p>
           <p><strong>Description:</strong> {recipe.description}</p>
           <p><strong>Ingredients:</strong> {recipe.ingredients}</p>
